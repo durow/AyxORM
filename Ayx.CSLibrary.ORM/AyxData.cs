@@ -16,9 +16,6 @@ namespace Ayx.CSLibrary.ORM
 
         public string ConnectionString { get; private set; }
         public DbType DbType { get; set; }
-        public DbMode DbMode { get; set; } = DbMode.Normal;
-        private IDbConnection _connection;
-        private IDbTransaction _transaction;
 
         #endregion
 
@@ -85,15 +82,26 @@ namespace Ayx.CSLibrary.ORM
 
         #endregion
 
+        #region Insert methods
+
+        public int Insert<T>(T item,IDbTransaction transaction = null)
+        {
+            var sql = SQLGenerator.GetInsertSQL<T>();
+            return ExecuteNonQuery(sql, item, transaction);            
+        }
+
+        public int Insert<T>(IList<T> itemList, IDbTransaction transaction = null)
+        {
+            return 0;
+        }
+
+        #endregion
+
         #region AbstractMethods
 
-        //创建链接
         public abstract IDbConnection CreateConnection();
-        //创建命令
         public abstract IDbCommand CreateCommand();
-        //创建数据适配器
         public abstract IDbDataAdapter CreateDataAdapter(IDbCommand cmd);
-        //创建查询参数
         public abstract IDbDataParameter CreateDataParameter(string field, object value);
 
         #endregion

@@ -5,7 +5,11 @@ using System.Text;
 
 namespace Ayx.CSLibrary.ORM
 {
-    class SQLGenerator
+    public class SQLGenerator
     {
+        public static string GetInsertSQL<T>()
+        {
+            return "";
+        }
     }
 }

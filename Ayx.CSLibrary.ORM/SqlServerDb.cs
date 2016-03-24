@@ -1,4 +1,7 @@
-﻿using System;
+﻿/*
+ * Description:SqlServer data operation
+*/
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -9,9 +12,13 @@ namespace Ayx.CSLibrary.ORM
 {
     public class SqlServerDb : AyxData
     {
-        public SqlServerDb(string connectionString):base(connectionString)
+        #region Constructure
+        public SqlServerDb(string connectionString) : base(connectionString)
         { }
 
+        #endregion
+
+        #region Factory
         public static string CreateSqlServerString(string ip, string username, string userpass, string dataName)
         {
             var result = "Data Source=" + ip +
@@ -20,6 +27,8 @@ namespace Ayx.CSLibrary.ORM
                          ";Password=" + userpass;
             return result;
         }
+
+        #endregion
 
         #region Implented abstract methods
 
@@ -30,9 +39,9 @@ namespace Ayx.CSLibrary.ORM
         }
 
         //创建SqlServer命令
-        public override IDbCommand CreateCommand(string sql, IDbConnection con)
+        public override IDbCommand CreateCommand()
         {
-            return new SqlCommand(sql, con as SqlConnection);
+            return new SqlCommand();
         }
 
         //创建SqlServer DataAdapter
