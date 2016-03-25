@@ -84,10 +84,10 @@ namespace Ayx.CSLibrary.ORM
 
         #region Insert methods
 
-        public int Insert<T>(T item,IDbTransaction transaction = null)
+        public int Insert<T>(T item, IDbTransaction transaction = null)
         {
-            var sql = SQLGenerator.GetInsertSQL<T>();
-            return ExecuteNonQuery(sql, item, transaction);            
+            var sql = SQLGenerator.GetInsertSQL(item);
+            return ExecuteNonQuery(sql, item, transaction);
         }
 
         public int Insert<T>(IList<T> itemList, IDbTransaction transaction = null)

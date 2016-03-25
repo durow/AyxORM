@@ -27,7 +27,7 @@ namespace Ayx.CSLibrary.ORM
             return result;
         }
 
-        public override IDbCommand CreateCommand(string sql, IDbConnection con)
+        public override IDbCommand CreateCommand()
         {
             throw new NotImplementedException();
         }
