@@ -45,18 +45,8 @@ namespace Ayx.CSLibrary.ORM
                     fieldName = MappingInfo[property.Name];
                 }
                 var t = property.PropertyType;
-                switch (t.Name)
-                {
-                    case "Int32": property.SetValue(item, dr.Field<Int32>(fieldName),null); break;
-                    case "Boolean": property.SetValue(item, dr.Field<Boolean>(fieldName),null); break;
-                    case "String": property.SetValue(item, dr.Field<String>(fieldName),null); break;
-                    case "DateTime": property.SetValue(item, dr.Field<DateTime>(fieldName),null); break;
-                    case "Double": property.SetValue(item, dr.Field<Double>(fieldName),null); break;
-                    case "Decimal": property.SetValue(item, dr.Field<Decimal>(fieldName),null); break;
-                    case "float": property.SetValue(item, dr.Field<float>(fieldName),null); break;
-                    default:
-                        break;
-                }
+                var v = Convert.ChangeType(dr[fieldName], t);
+                property.SetValue(item, v, null);
                 
             }
             catch
