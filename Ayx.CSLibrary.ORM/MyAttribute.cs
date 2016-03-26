@@ -11,6 +11,8 @@ namespace Ayx.CSLibrary.ORM
         public string FieldName { get; set; }
         public FieldType FieldType { get; set; }
         public int MaxLength { get; set; }
+        public bool AutoIncrement { get; set; }
+        public bool AllowEmpty { get; set; }
 
         public DbFieldAttribute()
         {
@@ -29,12 +31,6 @@ namespace Ayx.CSLibrary.ORM
 
     [AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
     public sealed class PrimaryKeyAttribute : Attribute
-    {
-
-    }
-
-    [AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
-    public sealed class AutoIncrementAttribute : Attribute
     {
 
     }
