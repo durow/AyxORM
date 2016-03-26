@@ -40,30 +40,29 @@ namespace Test.TestCase
                 Console.WriteLine();
             }
         }
+        }
     }
 
-    [DbTable("TestTable")]
-    class TestData
+[DbTable("TestTable")]
+class TestData
+{
+    [DbField(FieldName = "string_field", FieldType = FieldType.db_nvarchar, MaxLength = 50)]
+    public string StringProperty { get; set; }
+
+    [DbField(FieldName = "int_field", FieldType = FieldType.db_int)]
+    public int IntProperty { get; set; }
+
+    [PrimaryKey]
+    [DbField(FieldName = "id", AutoIncrement = true)]
+    public int ID { get; set; }
+
+    [NotDbField]
+    public bool IsRead { get; set; }
+
+    public TestData()
     {
-        [DbField(FieldName = "string_field", FieldType = FieldType.db_nvarchar, MaxLength = 50)]
-        public string StringProperty { get; set; }
-
-        [DbField(FieldName = "int_field", FieldType = FieldType.db_int)]
-        public int IntProperty { get; set; }
-
-        [PrimaryKey]
-        [AutoIncrement]
-        [DbField(FieldName = "id")]
-        public int ID { get; set; }
-
-        [NotDbField]
-        public bool IsRead { get; set; }
-
-        public TestData()
-        {
-            StringProperty = "TestString";
-            IntProperty = 1234;
-            ID = 1;
-        }
+        StringProperty = "TestString";
+        IntProperty = 1234;
+        ID = 1;
     }
 }

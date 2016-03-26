@@ -1,10 +1,43 @@
-﻿using System;
+﻿using Ayx.CSLibrary.Service;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace Ayx.CSLibrary.ORM
 {
+    public class DbAttributes
+    {
+        public static string GetDbFieldName(PropertyInfo property)
+        {
+            var attr = GetDbFieldAttribute(property);
+            return (attr != null) ? attr.FieldName : property.Name;
+        }
+
+        public static DbFieldAttribute GetDbFieldAttribute(PropertyInfo property)
+        {
+            return AttributeHelper.GetAttribute<DbFieldAttribute>(property);
+        }
+
+        public static string GetDbTableName<T>()
+        {
+            var attr = AttributeHelper.GetAttribute<DbTableAttribute, T>();
+            return (attr != null) ? attr.TableName : typeof(T).Name;
+        }
+
+        public static bool IsPrimaryKey(PropertyInfo property)
+        {
+            return AttributeHelper.CheckAttribute<PrimaryKeyAttribute>(property);
+        }
+
+        public static bool IsDbField(PropertyInfo property)
+        {
+            return !AttributeHelper.CheckAttribute<NotDbFieldAttribute>(property);
+        }
+
+    }
+
     [AttributeUsage(AttributeTargets.Property,AllowMultiple = false,Inherited = false)]
     public sealed class DbFieldAttribute : Attribute
     {

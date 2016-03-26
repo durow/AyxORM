@@ -12,7 +12,6 @@ namespace Test
     {
         static void Main(string[] args)
         {
-            AttributeTest.Test();
             Console.ReadLine();
         }
     }

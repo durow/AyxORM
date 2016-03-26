@@ -54,7 +54,7 @@
   <ItemGroup>
     <Compile Include="MapperTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RefHelperTests.cs" />
+    <Compile Include="DbAttributesTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Ayx.CSLibrary.ORM\Ayx.CSLibrary.ORM.csproj">

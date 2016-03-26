@@ -21,14 +21,15 @@ namespace Ayx.CSLibrary.ORM.Tests
             testTable.Columns.Add("Property1");
             testTable.Columns.Add("Property2");
             testTable.Columns.Add("Property3");
-            testTable.Rows.Add("row1", 1111, true);
-            testTable.Rows.Add("row2", 2222, false);
-            testTable.Rows.Add("row3", 3333, true);
+            testTable.Columns.Add("NotField");
+            testTable.Rows.Add("row1", 1111, true,"not show");
+            testTable.Rows.Add("row2", 2222, false, "not show");
+            testTable.Rows.Add("row3", 3333, true, "not show");
 
             mapTable = new DataTable("TestModel");
-            mapTable.Columns.Add("Field1");
-            mapTable.Columns.Add("Field2");
-            mapTable.Columns.Add("Field3");
+            mapTable.Columns.Add("field1");
+            mapTable.Columns.Add("field2");
+            mapTable.Columns.Add("field3");
             mapTable.Rows.Add("test1", 9999, false);
             mapTable.Rows.Add("test2", 8888, true);
             mapTable.Rows.Add("test3", 7777, false);
@@ -39,9 +40,9 @@ namespace Ayx.CSLibrary.ORM.Tests
         public void CheckPropertyExistTest()
         {
             var mapper = new Mapper<TestModel>(testTable.Columns);
-            var test1 = mapper.CheckPropertyExist("Property2");
+            var test1 = mapper.CheckFieldExist("Property2");
             var mapper2 = new Mapper<TestModel>(mapTable.Columns);
-            var test2 = mapper2.CheckPropertyExist("Property2");
+            var test2 = mapper2.CheckFieldExist("Property2");
 
             Assert.IsTrue(test1 == true &&
                                  test2 == false,
@@ -54,19 +55,43 @@ namespace Ayx.CSLibrary.ORM.Tests
             try
             {
                 var mapper = new Mapper<TestModel>();
-                var test = mapper.ToModel(testTable.Rows[0]);
+                var test = mapper.From(testTable.Rows[0]);
                 Assert.IsTrue(test.Property1 == "row1" &&
                                      test.Property2 == 1111 &&
-                                     test.Property3 == true,
+                                     test.Property3 == true &&
+                                     test.NotField == null,
                                      test.Property1 + "  " +
                                      test.Property2 + "  " +
-                                     test.Property3);
+                                     test.Property3 + "  " +
+                                     test.NotField);
             }
             catch(Exception e)
             {
                 Assert.Fail(e.ToString());
             }
         }
+
+        [TestMethod()]
+        public void DataRowToModelMapTest()
+        {
+            try
+            {
+                var test = new Mapper<MapModel>().From(mapTable.Rows[0]);
+                Assert.IsTrue(test.Property1 == "test1" &&
+                                     test.Property2 == 9999 &&
+                                     test.Property3 == false &&
+                                     test.NotField == null,
+                                     test.Property1 + "  " +
+                                     test.Property2 + "  " +
+                                     test.Property3 + "  " +
+                                     test.NotField);
+            }
+            catch (Exception e)
+            {
+                Assert.Fail(e.ToString());
+            }
+        }
+
     }
 
     class TestModel
@@ -74,5 +99,22 @@ namespace Ayx.CSLibrary.ORM.Tests
         public string Property1 { get; set; }
         public int Property2 { get; set; }
         public bool Property3 { get; set; }
+        [NotDbField]
+        public string NotField { get; set; }
+    }
+
+    class MapModel
+    {
+        [DbField(FieldName = "field1")]
+        public string Property1 { get; set; }
+
+        [DbField(FieldName = "field2")]
+        public int Property2 { get; set; }
+
+        [DbField(FieldName = "field3")]
+        public bool Property3 { get; set; }
+
+        [NotDbField]
+        public string NotField { get; set; }
     }
 }

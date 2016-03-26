@@ -18,50 +18,34 @@ namespace Ayx.CSLibrary.ORM
             _columns = columns;
         }
 
-        public T ToModel(DataRow dr)
+        public T From(DataRow dr)
         {
-            var type = typeof(T);
             if (_columns == null)
                 _columns = dr.Table.Columns;
             var result = Activator.CreateInstance<T>();
-            foreach (var property in type.GetProperties())
+            foreach (var property in typeof(T).GetProperties())
             {
-                var fieldName = GetFieldName(property);
-                if (CheckPropertyExist(fieldName))
-                {
-                    SetModelValue(result, property, dr);
-                }
+                SetPropertyValue(result, property, dr);
             }
             return result;
         }
 
-        public void SetModelValue(T item, PropertyInfo property, DataRow dr)
+        public void SetPropertyValue(object item, PropertyInfo property, DataRow dr)
         {
             try
             {
-                var fieldName = property.Name;
-
-                var t = property.PropertyType;
-                var v = Convert.ChangeType(dr[fieldName], t);
-                property.SetValue(item, v, null);
-                
+                if (!DbAttributes.IsDbField(property)) return;
+                var dbFieldName = DbAttributes.GetDbFieldName(property);
+                if (!CheckFieldExist(dbFieldName)) return;
+                var value = Convert.ChangeType(dr[dbFieldName], property.PropertyType);
+                property.SetValue(item, value, null);
             }
-            catch
-            { throw; }
+            catch { throw; }
         }
 
-        public string GetFieldName(PropertyInfo prop)
+        public bool CheckFieldExist(string propertyName)
         {
-            prop.GetCustomAttributesData().Where(p => p.GetType().Name == "DbFieldAttribute");
-            return "";
-        }
-
-        public bool CheckPropertyExist(string propertyName)
-        {
-                return _columns.Contains(propertyName);
+            return _columns.Contains(propertyName);
         }
     }
-
-    public class MappingInfo : Dictionary<string, string>
-    { }
 }
