@@ -16,7 +16,8 @@ namespace Ayx.CSLibrary.ORM
         #region Properties
 
         public IADOFactory ADOFactory { get; set; }
-        public DbType DbType { get; set; }
+        public string DbType { get { return ADOFactory.DbType; } }
+        public string ConnectionString { get{ return ADOFactory.ConnectionString; } }
 
         #endregion
 
@@ -59,7 +60,7 @@ namespace Ayx.CSLibrary.ORM
         public DataSet ExecuteDataSet(string sql, object param = null, IDbTransaction transaction = null)
         {
             var cmd = GetCommand(sql, param, transaction);
-            var da = ADOFactory.CreateDataAdapter(cmd);
+            var da = ADOFactory.CreateDataAdapter();
             var ds = new DataSet();
             da.Fill(ds);
             return ds;
@@ -76,7 +77,7 @@ namespace Ayx.CSLibrary.ORM
 
         public IDbTransaction GetTransaction()
         {
-            var con = ADOFactory.CreateConnection();
+            var con = GetConnection();
             con.Open();
             return con.BeginTransaction();
         }
@@ -117,8 +118,16 @@ namespace Ayx.CSLibrary.ORM
             if (transaction != null)
                 con = transaction.Connection;
             else
-                con = ADOFactory.CreateConnection();
+                return GetConnection();
+
             return con;
+        }
+
+        private IDbConnection GetConnection()
+        {
+            var result = ADOFactory.CreateConnection();
+            result.ConnectionString = ConnectionString;
+            return result;
         }
 
         private IDbCommand GetCommand(string sql,object param,IDbTransaction transaction)

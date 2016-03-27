@@ -12,7 +12,7 @@ namespace Ayx.CSLibrary.ORM.Common
         string DbType { get; }
         IDbConnection CreateConnection();
         IDbCommand CreateCommand();
-        IDbDataAdapter CreateDataAdapter(IDbCommand cmd);
+        IDbDataAdapter CreateDataAdapter();
         IDbDataParameter CreateDataParameter(string field, object value);
     }
 }

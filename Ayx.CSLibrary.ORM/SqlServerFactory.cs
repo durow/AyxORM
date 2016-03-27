@@ -45,7 +45,7 @@ namespace Ayx.CSLibrary.ORM
         //创建SqlServer链接
         public IDbConnection CreateConnection()
         {
-            return new SqlConnection(ConnectionString);
+            return new SqlConnection();
         }
 
         //创建SqlServer命令
@@ -55,9 +55,9 @@ namespace Ayx.CSLibrary.ORM
         }
 
         //创建SqlServer DataAdapter
-        public IDbDataAdapter CreateDataAdapter(IDbCommand cmd)
+        public IDbDataAdapter CreateDataAdapter()
         {
-            return new SqlDataAdapter(cmd as SqlCommand);
+            return new SqlDataAdapter();
         }
 
         //创建SqlServer查询参数

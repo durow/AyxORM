@@ -49,7 +49,7 @@ namespace Ayx.CSLibrary.ORM
             throw new NotImplementedException();
         }
 
-        public IDbDataAdapter CreateDataAdapter(IDbCommand cmd)
+        public IDbDataAdapter CreateDataAdapter()
         {
             throw new NotImplementedException();
         }
