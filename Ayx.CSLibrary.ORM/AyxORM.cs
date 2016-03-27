@@ -2,6 +2,7 @@
  * Description:The base class of data operation
 */
 
+using Ayx.CSLibrary.ORM.Common;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -10,20 +11,20 @@ using System.Text;
 
 namespace Ayx.CSLibrary.ORM
 {
-    public abstract class AyxData
+    public class AyxORM
     {
         #region Properties
 
-        public string ConnectionString { get; private set; }
+        public IADOFactory ADOFactory { get; set; }
         public DbType DbType { get; set; }
 
         #endregion
 
         #region Constructure
 
-        protected AyxData(string connectionString)
+        protected AyxORM(IADOFactory adoFactory)
         {
-            ConnectionString = connectionString;
+            ADOFactory = adoFactory;
         }
 
         #endregion
@@ -58,7 +59,7 @@ namespace Ayx.CSLibrary.ORM
         public DataSet ExecuteDataSet(string sql, object param = null, IDbTransaction transaction = null)
         {
             var cmd = GetCommand(sql, param, transaction);
-            var da = CreateDataAdapter(cmd);
+            var da = ADOFactory.CreateDataAdapter(cmd);
             var ds = new DataSet();
             da.Fill(ds);
             return ds;
@@ -75,7 +76,7 @@ namespace Ayx.CSLibrary.ORM
 
         public IDbTransaction GetTransaction()
         {
-            var con = CreateConnection();
+            var con = ADOFactory.CreateConnection();
             con.Open();
             return con.BeginTransaction();
         }
@@ -97,15 +98,6 @@ namespace Ayx.CSLibrary.ORM
 
         #endregion
 
-        #region AbstractMethods
-
-        public abstract IDbConnection CreateConnection();
-        public abstract IDbCommand CreateCommand();
-        public abstract IDbDataAdapter CreateDataAdapter(IDbCommand cmd);
-        public abstract IDbDataParameter CreateDataParameter(string field, object value);
-
-        #endregion
-
         #region PrivateMethods
 
         //Add parameters to command
@@ -115,7 +107,7 @@ namespace Ayx.CSLibrary.ORM
             var t = param.GetType();
             foreach (var property in t.GetProperties())
             {
-                cmd.Parameters.Add(CreateDataParameter("@"+property.Name, property.GetValue(param,null)));
+                cmd.Parameters.Add(ADOFactory.CreateDataParameter("@"+property.Name, property.GetValue(param,null)));
             }
         }
 
@@ -125,14 +117,14 @@ namespace Ayx.CSLibrary.ORM
             if (transaction != null)
                 con = transaction.Connection;
             else
-                con = CreateConnection();
+                con = ADOFactory.CreateConnection();
             return con;
         }
 
         private IDbCommand GetCommand(string sql,object param,IDbTransaction transaction)
         {
             var con = GetConnection(transaction);
-            var cmd = CreateCommand();
+            var cmd = ADOFactory.CreateCommand();
             cmd.CommandText = sql;
             cmd.Connection = con;
             cmd.Transaction = transaction;
