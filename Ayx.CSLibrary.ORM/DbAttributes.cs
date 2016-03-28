@@ -30,6 +30,17 @@ namespace Ayx.CSLibrary.ORM
             return typeof(T).Name;
         }
 
+        public static PropertyInfo GetPrimaryKeyProperty<T>()
+        {
+            var type = typeof(T);
+            foreach (var property in type.GetProperties())
+            {
+                if (IsPrimaryKey(property))
+                    return property;
+            }
+            return null;
+        }
+
         public static bool IsPrimaryKey(PropertyInfo property)
         {
             return AttributeHelper.CheckAttribute<PrimaryKeyAttribute>(property);
@@ -40,15 +51,19 @@ namespace Ayx.CSLibrary.ORM
             return !AttributeHelper.CheckAttribute<NotDbFieldAttribute>(property);
         }
 
+        public static bool IsAutoIncrement(PropertyInfo property)
+        {
+            return AttributeHelper.CheckAttribute<AutoIncrementAttribute>(property);
+        }
+
     }
 
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
     public sealed class DbFieldAttribute : Attribute
     {
         public string FieldName { get; set; }
-        public FieldType FieldType { get; set; }
+        public string FieldType { get; set; }
         public int MaxLength { get; set; }
-        public bool AutoIncrement { get; set; }
         public bool AllowEmpty { get; set; }
 
         public DbFieldAttribute()
@@ -74,6 +89,12 @@ namespace Ayx.CSLibrary.ORM
 
     [AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
     public sealed class NotDbFieldAttribute : Attribute
+    {
+
+    }
+
+    [AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
+    public sealed class AutoIncrementAttribute : Attribute
     {
 
     }

@@ -18,7 +18,8 @@ namespace Ayx.CSLibrary.ORM.Tests
             public string TestProperty { get; set; }
 
             [PrimaryKey]
-            [DbField(FieldName = "id", AutoIncrement = true)]
+            [AutoIncrement]
+            [DbField(FieldName = "id")]
             public int ID { get; set; }
 
             [NotDbField]

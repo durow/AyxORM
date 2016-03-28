@@ -37,19 +37,6 @@ namespace Ayx.CSLibrary.ORM.Tests
         }
 
         [TestMethod()]
-        public void CheckPropertyExistTest()
-        {
-            var mapper = new Mapper<TestModel>(testTable.Columns);
-            var test1 = mapper.CheckFieldExist("Property2");
-            var mapper2 = new Mapper<TestModel>(mapTable.Columns);
-            var test2 = mapper2.CheckFieldExist("Property2");
-
-            Assert.IsTrue(test1 == true &&
-                                 test2 == false,
-                                 test1 + "  " + test2);
-        }
-
-        [TestMethod()]
         public void DataRowToModelTest()
         {
             try

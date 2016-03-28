@@ -46,14 +46,15 @@ namespace Test.TestCase
 [DbTable("TestTable")]
 class TestData
 {
-    [DbField(FieldName = "string_field", FieldType = FieldType.db_nvarchar, MaxLength = 50)]
+    [DbField(FieldName = "string_field", FieldType = "nvarchar", MaxLength = 50)]
     public string StringProperty { get; set; }
 
-    [DbField(FieldName = "int_field", FieldType = FieldType.db_int)]
+    [DbField(FieldName = "int_field", FieldType = "int")]
     public int IntProperty { get; set; }
 
     [PrimaryKey]
-    [DbField(FieldName = "id", AutoIncrement = true)]
+    [AutoIncrement]
+    [DbField(FieldName = "id")]
     public int ID { get; set; }
 
     [NotDbField]
