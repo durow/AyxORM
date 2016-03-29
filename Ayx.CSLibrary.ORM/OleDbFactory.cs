@@ -23,22 +23,6 @@ namespace Ayx.CSLibrary.ORM
             _dbType = dbType;
         }
 
-        public static OleDbFactory CreateExcelString(string filename)
-        {
-            var conStr = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + filename +
-                         ";Extended Properties='Excel 8.0;HDR=False;IMEX=1'";
-            return new OleDbFactory(conStr, "Excel");
-        }
-
-        public static OleDbFactory CreateAccessString(string fileName, string password = null)
-        {
-            var conStr = "Provider=Microsoft.ACE.OLEDB.12.0;" +
-                         "Data Source=" + fileName;
-            if (!string.IsNullOrEmpty(password))
-                conStr += "Jet OLEDB:Database Password=" + password;
-            return new OleDbFactory(conStr, "Access");
-        }
-
         public IDbConnection CreateConnection()
         {
             return new OleDbConnection();
@@ -46,17 +30,17 @@ namespace Ayx.CSLibrary.ORM
 
         public IDbCommand CreateCommand()
         {
-            throw new NotImplementedException();
+            return new OleDbCommand();
         }
 
         public IDbDataAdapter CreateDataAdapter()
         {
-            throw new NotImplementedException();
+            return new OleDbDataAdapter();
         }
 
         public IDbDataParameter CreateDataParameter(string field, object value)
         {
-            throw new NotImplementedException();
+            return new OleDbParameter(field, value);
         }
     }
 }

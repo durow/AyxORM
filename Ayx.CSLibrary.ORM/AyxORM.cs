@@ -25,9 +25,29 @@ namespace Ayx.CSLibrary.ORM
 
         #region Constructure
 
-        protected AyxORM(IADOFactory adoFactory)
+        public AyxORM(IADOFactory adoFactory)
         {
             ADOFactory = adoFactory;
+        }
+
+        #endregion
+
+        #region Factory
+
+        public static AyxORM UseExcel2003(string filename)
+        {
+            var conStr = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + filename +
+                         ";Extended Properties='Excel 8.0;HDR=False;IMEX=1'";
+            return new AyxORM(new OleDbFactory(conStr, "Excel"));
+        }
+
+        public static AyxORM UseAccess2003(string fileName, string password = null)
+        {
+            var conStr = "Provider=Microsoft.Jet.OLEDB.4.0;" +
+                         "Data Source=" + fileName;
+            if (!string.IsNullOrEmpty(password))
+                conStr += "Jet OLEDB:Database Password=" + password;
+            return new AyxORM(new OleDbFactory(conStr, "Access"));
         }
 
         #endregion
@@ -79,6 +99,29 @@ namespace Ayx.CSLibrary.ORM
                 else
                 {
                     return cmd.ExecuteNonQuery();
+                }
+            }
+            catch
+            {
+                cmd.Connection.Close();
+                throw;
+            }
+        }
+
+        public object ExecuteScalar(IDbCommand cmd)
+        {
+            try
+            {
+                if (cmd.Transaction == null)
+                {
+                    cmd.Connection.Open();
+                    var result = cmd.ExecuteScalar();
+                    cmd.Connection.Close();
+                    return result;
+                }
+                else
+                {
+                    return cmd.ExecuteScalar();
                 }
             }
             catch
@@ -173,17 +216,60 @@ namespace Ayx.CSLibrary.ORM
 
         public int Insert<T>(T item, IDbTransaction transaction = null)
         {
-            throw new NotImplementedException();
+            var mapping = Mapper<T>.GetInsertMapping();
+            var sql = SQLGenerator.GetInsertSQL<T>(mapping);
+            var cmd = GetCommand(sql, null, transaction);
+            AddDataParameters(cmd, item, mapping);
+            return ExecuteNonQuery(cmd);
         }
 
         public int InsertAndGetID<T>(T item, IDbTransaction transaction = null)
         {
-            throw new NotImplementedException();
+            var mapping = Mapper<T>.GetInsertMapping();
+            var sql = SQLGenerator.GetInsertAndGetIDSQL<T>(mapping);
+            var cmd = GetCommand(sql, null, transaction);
+            AddDataParameters(cmd, item, mapping);
+            return (int)ExecuteScalar(cmd);
         }
 
-        public int Insert<T>(IList<T> items, IDbTransaction transaction = null)
+        public int InsertList<T>(IList<T> items, IDbTransaction transaction = null)
         {
-            throw new NotImplementedException();
+            bool isNewTransaction = false;
+            var mapping = Mapper<T>.GetInsertMapping();
+            var sql = SQLGenerator.GetInsertSQL<T>(mapping);
+            if (transaction == null)
+            {
+                transaction = GetTransaction();
+                isNewTransaction = true;
+            }
+            var cmd = GetCommand(sql, null, transaction);
+
+            try
+            {
+                foreach (var item in items)
+                {
+                    cmd.Parameters.Clear();
+                    AddDataParameters(cmd, item, mapping);
+                    ExecuteNonQuery(cmd);
+                }
+                if (isNewTransaction)
+                {
+                    transaction.Commit();
+                }
+            }
+            catch(Exception e)
+            {
+                transaction.Rollback();
+                transaction.Connection.Close();
+                throw;
+            }
+            return items.Count;
+        }
+
+        public int ClearTable<T>(IDbTransaction transaction = null)
+        {
+            var sql = SQLGenerator.GetClearSQL<T>();
+            return ExecuteNonQuery(sql, null, transaction);
         }
 
         #endregion
@@ -210,6 +296,14 @@ namespace Ayx.CSLibrary.ORM
             {
                 if (!DbAttributes.IsDbField(property)) continue;
                 AddDataParameter(cmd, param, property);
+            }
+        }
+
+        private void AddDataParameters<T>(IDbCommand cmd, T item, Dictionary<PropertyInfo,string> mapping)
+        {
+            foreach (var map in mapping)
+            {
+                AddDataParameter(cmd, item, map.Key);
             }
         }
 

@@ -32,23 +32,23 @@ namespace Ayx.CSLibrary.ORM
 
         public IEnumerable<T> From(DataTable table)
         {
-            if (table == null) return new List<T>();
+            if (table == null) yield break;
             CheckFieldMapping(table.Columns);
-            var result = CreateInstanceList(table.Rows.Count).ToList();
-            foreach (var property in FieldMapping)
+            foreach (DataRow dr in table.Rows)
             {
-                for (int i = 0; i < result.Count; i++)
+                var temp = Activator.CreateInstance<T>();
+                foreach (var map in FieldMapping)
                 {
-                    SetPropertyValue(result, property.Key, table.Rows[i][property.Value]);
+                    SetPropertyValue(temp, map.Key, dr[map.Value]);
+                    yield return temp;
                 }
             }
-            return result;
         }
 
         public void CheckFieldMapping(DataColumnCollection columns)
         {
             if (FieldMapping != null) return;
-            FieldMapping = GetSelectMapping<T>(columns);
+            FieldMapping = GetSelectMapping(columns);
         }
 
         public void SetPropertyValue(object item, PropertyInfo property, object value)
@@ -71,10 +71,10 @@ namespace Ayx.CSLibrary.ORM
             yield return Activator.CreateInstance<T>();
         }
 
-        public static Dictionary<PropertyInfo, string> GetSelectMapping<TModel>(DataColumnCollection columns)
+        public static Dictionary<PropertyInfo, string> GetSelectMapping(DataColumnCollection columns)
         {
             var result = new Dictionary<PropertyInfo, string>();
-            var type = typeof(TModel);
+            var type = typeof(T);
             foreach (var property in type.GetProperties())
             {
                 if (!DbAttributes.IsDbField(property)) continue;
@@ -85,24 +85,24 @@ namespace Ayx.CSLibrary.ORM
             return result;
         }
 
-        public static Dictionary<PropertyInfo, string> GetInsertMapping<TModel>()
+        public static Dictionary<PropertyInfo, string> GetInsertMapping()
         {
             var result = new Dictionary<PropertyInfo, string>();
-            var type = typeof(TModel);
+            var type = typeof(T);
             foreach (var property in type.GetProperties())
             {
                 if (!DbAttributes.IsDbField(property)) continue;
-                if (!DbAttributes.IsAutoIncrement(property)) continue;
+                if (DbAttributes.IsAutoIncrement(property)) continue;
                 var fieldName = DbAttributes.GetDbFieldName(property);
                 result.Add(property, fieldName);
             }
             return result;
         }
 
-        public static Dictionary<PropertyInfo, string> GetUpdateMapping<TModel>()
+        public static Dictionary<PropertyInfo, string> GetUpdateMapping()
         {
             var result = new Dictionary<PropertyInfo, string>();
-            var type = typeof(TModel);
+            var type = typeof(T);
             foreach (var property in type.GetProperties())
             {
                 if (!DbAttributes.IsDbField(property)) continue;
