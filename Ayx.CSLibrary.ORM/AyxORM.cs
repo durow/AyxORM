@@ -186,8 +186,24 @@ namespace Ayx.CSLibrary.ORM
         public IEnumerable<T> Select<T>(string where = "", object param= null, IDbTransaction transaction = null)
         {
             var sql = SQLGenerator.GetSelectSQL<T>(where);
-            var dt = ExecuteDataTable(sql, param, transaction);
-            return new Mapper<T>().From(dt);
+            var cmd = GetCommand(sql, param, transaction);
+            try
+            {
+                if (transaction == null)
+                    cmd.Connection.Open();
+                var reader = cmd.ExecuteReader();
+                var result = new Mapper<T>().From(reader).ToList();
+                reader.Close();
+                if (transaction == null)
+                    cmd.Connection.Close();
+                return result;
+            }
+            catch
+            {
+                if(transaction == null)
+                    cmd.Connection.Close();
+                throw;
+            }
         }
 
         public int Delete<T>(T item, IDbTransaction transaction)

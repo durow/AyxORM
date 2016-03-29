@@ -58,6 +58,24 @@ namespace Sample.Model
             };
         }
 
+        public static TestData FromReader(IDataReader reader)
+        {
+            return new TestData
+            {
+                ID = (int)reader["ID"],
+                ShortTextProperty = reader["ShortTextField"].ToString(),
+                AddField1 = reader["AddField1"].ToString(),
+                AddField2 = reader["AddField2"].ToString(),
+                AddField3 = reader["AddField3"].ToString(),
+                AddField4 = reader["AddField4"].ToString(),
+                AddField5 = reader["AddField5"].ToString(),
+                BoolField = (bool)reader["BoolField"],
+                DateTimeProperty = reader["DateTimeField"].ToString(),
+                IntProperty = (int)reader["IntField"],
+                LongTextProperty = reader["LongTextField"].ToString(),
+            };
+        }
+
         public static IEnumerable<TestData> FromDataTable(DataTable dt)
         {
             foreach (DataRow dr in dt.Rows)

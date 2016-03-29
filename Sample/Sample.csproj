@@ -55,6 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Data\AccessAdoOperator.cs" />
     <Compile Include="Data\IDataOperator.cs" />
     <Compile Include="Data\OrmOperator.cs" />
     <Compile Include="Data\OrmSqlOperator.cs" />

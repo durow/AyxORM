@@ -19,6 +19,12 @@ namespace Ayx.CSLibrary.ORM
                 CheckFieldMapping(columns);
         }
 
+        public Mapper(Dictionary<PropertyInfo,string> mapping)
+        {
+            ItemType = typeof(T);
+            FieldMapping = mapping;
+        }
+
         public T From(DataRow row)
         {
             CheckFieldMapping(row.Table.Columns);
@@ -40,8 +46,23 @@ namespace Ayx.CSLibrary.ORM
                 foreach (var map in FieldMapping)
                 {
                     SetPropertyValue(temp, map.Key, dr[map.Value]);
-                    yield return temp;
                 }
+                yield return temp;
+            }
+        }
+
+        public IEnumerable<T> From(IDataReader reader)
+        {
+            CheckFieldMapping(null);
+
+            while(reader.Read())
+            {
+                var result = Activator.CreateInstance<T>();
+                foreach (var property in FieldMapping)
+                {
+                    SetPropertyValue(result, property.Key, reader[property.Value]);
+                }
+                yield return result;
             }
         }
 
@@ -49,6 +70,11 @@ namespace Ayx.CSLibrary.ORM
         {
             if (FieldMapping != null) return;
             FieldMapping = GetSelectMapping(columns);
+        }
+
+        public void CheckFieldMapping()
+        {
+            if (FieldMapping != null) return;
         }
 
         public void SetPropertyValue(object item, PropertyInfo property, object value)
@@ -79,7 +105,8 @@ namespace Ayx.CSLibrary.ORM
             {
                 if (!DbAttributes.IsDbField(property)) continue;
                 var fieldName = DbAttributes.GetDbFieldName(property);
-                if (!columns.Contains(fieldName)) continue;
+                if(columns != null)
+                    if (!columns.Contains(fieldName)) continue;
                 result.Add(property, fieldName);
             }
             return result;

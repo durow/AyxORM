@@ -36,7 +36,7 @@ namespace Sample
 
         // Using a DependencyProperty as the backing store for DataType.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty DataTypeProperty =
-            DependencyProperty.Register("DataType", typeof(DbType), typeof(OrmTestControl), new PropertyMetadata(DbType.Access));
+            DependencyProperty.Register("DataType", typeof(DbType), typeof(OrmTestControl), new PropertyMetadata(null));
 
 
         #endregion
@@ -52,7 +52,7 @@ namespace Sample
 
         // Using a DependencyProperty as the backing store for TestType.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty TestTypeProperty =
-            DependencyProperty.Register("TestType", typeof(TestType), typeof(OrmTestControl), new PropertyMetadata(TestType.ORM));
+            DependencyProperty.Register("TestType", typeof(TestType), typeof(OrmTestControl), new PropertyMetadata(null));
 
 
         #endregion
@@ -64,7 +64,12 @@ namespace Sample
         public OrmTestControl()
         {
             InitializeComponent();
-            InitData();
+        }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (DataOperator == null)
+                InitData();
         }
 
         private void InitData()
@@ -77,16 +82,25 @@ namespace Sample
             {
                 DataOperator = OrmSqlOperator.GetOrmSqlOperator(DataType);
             }
+            if(TestType == TestType.ADO)
+            {
+                if (DataType == DbType.Access)
+                    DataOperator = new AccessAdoOperator();
+            }
+            DataTypeText.Text = "数据库类型:" + DataType.ToString() + "  连接访问方式:" + TestType.ToString();
         }
 
         private void InsertButton_Click(object sender, RoutedEventArgs e)
         {
-            var dataList = TestData.GetTestData(500).ToList();
+            var insert = 0;
+            try { insert = int.Parse(InsertCountText.Text); }
+            catch { return; }
+            var dataList = TestData.GetTestData(insert).ToList();
             var start = DateTime.Now;
             var count = DataOperator.Insert(dataList);
             var ts = DateTime.Now - start;
             ResultGrid.ItemsSource = null;
-            ShowTime(ts, "清除" + count + "条数据");
+            ShowTime(ts, "插入" + count + "条数据");
         }
 
         private void SelectButton_Click(object sender, RoutedEventArgs e)
@@ -118,6 +132,8 @@ namespace Sample
                 MessageBox.Show(e.Message);
             }
         }
+
+        
     }
 
     public enum DbType
@@ -129,8 +145,8 @@ namespace Sample
 
     public enum TestType
     {
-        ORM,
         ORMSql,
         ADO,
+        ORM,
     }
 }
