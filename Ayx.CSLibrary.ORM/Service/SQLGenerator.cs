@@ -29,7 +29,7 @@ namespace Ayx.CSLibrary.ORM.Service
                 .Replace("{values}", valueSB.ToString(0, valueSB.Length - 1));
         }
 
-        public static string GetIdentitySQL<T>(Dictionary<PropertyInfo, string> mapping)
+        public static string GetIdentitySQL()
         {
             return "SELECT @@IDENTITY";
         }

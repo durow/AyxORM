@@ -22,7 +22,7 @@ namespace Ayx.CSLibrary.ORM.Tests
             testTable.Columns.Add("Property2");
             testTable.Columns.Add("Property3");
             testTable.Columns.Add("NotField");
-            testTable.Rows.Add("row1", 1111, true,"not show");
+            testTable.Rows.Add("row1", 1111, true, "not show");
             testTable.Rows.Add("row2", 2222, false, "not show");
             testTable.Rows.Add("row3", 3333, true, "not show");
 
@@ -39,46 +39,39 @@ namespace Ayx.CSLibrary.ORM.Tests
         [TestMethod()]
         public void DataRowToModelTest()
         {
-            try
-            {
-                var mapper = new Mapper<TestModel>();
-                var test = mapper.From(testTable.Rows[0]);
-                Assert.IsTrue(test.Property1 == "row1" &&
-                                     test.Property2 == 1111 &&
-                                     test.Property3 == true &&
-                                     test.NotField == null,
-                                     test.Property1 + "  " +
-                                     test.Property2 + "  " +
-                                     test.Property3 + "  " +
-                                     test.NotField);
-            }
-            catch(Exception e)
-            {
-                Assert.Fail(e.ToString());
-            }
+            var mapper = new Mapper<TestModel>();
+            var test = mapper.From(testTable.Rows[0]);
+            Assert.IsTrue(test.Property1 == "row1" &&
+                                 test.Property2 == 1111 &&
+                                 test.Property3 == true &&
+                                 test.NotField == null,
+                                 test.Property1 + "  " +
+                                 test.Property2 + "  " +
+                                 test.Property3 + "  " +
+                                 test.NotField);
         }
 
         [TestMethod()]
         public void DataRowToModelMapTest()
         {
-            try
-            {
-                var test = new Mapper<MapModel>().From(mapTable.Rows[0]);
-                Assert.IsTrue(test.Property1 == "test1" &&
-                                     test.Property2 == 9999 &&
-                                     test.Property3 == false &&
-                                     test.NotField == null,
-                                     test.Property1 + "  " +
-                                     test.Property2 + "  " +
-                                     test.Property3 + "  " +
-                                     test.NotField);
-            }
-            catch (Exception e)
-            {
-                Assert.Fail(e.ToString());
-            }
+            var test = new Mapper<MapModel>().From(mapTable.Rows[0]);
+            Assert.IsTrue(test.Property1 == "test1" &&
+                                 test.Property2 == 9999 &&
+                                 test.Property3 == false &&
+                                 test.NotField == null,
+                                 test.Property1 + "  " +
+                                 test.Property2 + "  " +
+                                 test.Property3 + "  " +
+                                 test.NotField);
         }
 
+        [TestMethod()]
+        public void FromDataTableTest()
+        {
+            var expected = 3;
+            var actual = new Mapper<TestModel>().From(testTable).Count();
+            Assert.AreEqual(expected,actual);
+        }
     }
 
     class TestModel

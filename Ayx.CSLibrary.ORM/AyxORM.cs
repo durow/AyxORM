@@ -218,7 +218,7 @@ namespace Ayx.CSLibrary.ORM
             try
             {
                 Insert<T>(item, transaction);
-                var cmd = GetCommand("SELECT @@IDENTITY", null, transaction);
+                var cmd = GetCommand(SQLGenerator.GetIdentitySQL(), null, transaction);
                 var result = cmd.ExecuteScalar();
                 if(newTrans)
                     transaction.Commit();

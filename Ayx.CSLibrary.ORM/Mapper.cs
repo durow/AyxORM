@@ -9,21 +9,7 @@ namespace Ayx.CSLibrary.ORM
 {
     public class Mapper<T>
     {
-        public Type ItemType { get; private set; }
         public Dictionary<PropertyInfo, string> FieldMapping { get; private set; }
-
-        public Mapper(DataColumnCollection columns = null)
-        {
-            ItemType = typeof(T);
-            if (columns != null)
-                CheckFieldMapping(columns);
-        }
-
-        public Mapper(Dictionary<PropertyInfo,string> mapping)
-        {
-            ItemType = typeof(T);
-            FieldMapping = mapping;
-        }
 
         public T From(DataRow row)
         {
@@ -72,15 +58,10 @@ namespace Ayx.CSLibrary.ORM
             FieldMapping = GetSelectMapping(columns);
         }
 
-        public void CheckFieldMapping()
-        {
-            if (FieldMapping != null) return;
-        }
-
         public static void SetPropertyValue(object item, PropertyInfo property, object value)
         {
             var newValue = Convert.ChangeType(value, property.PropertyType);
-            property.SetValue(item, value, null);
+            property.SetValue(item, newValue, null);
         }
 
         public string GetFieldName(PropertyInfo property, DataColumnCollection columns)
