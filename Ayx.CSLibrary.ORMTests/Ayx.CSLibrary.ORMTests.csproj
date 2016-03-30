@@ -52,9 +52,11 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="AyxORMTests.cs" />
     <Compile Include="MapperTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DbAttributesTests.cs" />
+    <Compile Include="TestData\TestData.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Ayx.CSLibrary.ORM\Ayx.CSLibrary.ORM.csproj">

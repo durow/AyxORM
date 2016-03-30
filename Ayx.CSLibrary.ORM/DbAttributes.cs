@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Ayx.CSLibrary.ORM
 {
-    public class DbAttributes
+    public sealed class DbAttributes
     {
         public static string GetDbFieldName(PropertyInfo property)
         {

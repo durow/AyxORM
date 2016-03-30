@@ -77,7 +77,7 @@ namespace Ayx.CSLibrary.ORM
             if (FieldMapping != null) return;
         }
 
-        public void SetPropertyValue(object item, PropertyInfo property, object value)
+        public static void SetPropertyValue(object item, PropertyInfo property, object value)
         {
             var newValue = Convert.ChangeType(value, property.PropertyType);
             property.SetValue(item, value, null);
@@ -133,6 +133,7 @@ namespace Ayx.CSLibrary.ORM
             foreach (var property in type.GetProperties())
             {
                 if (!DbAttributes.IsDbField(property)) continue;
+                if (DbAttributes.IsAutoIncrement(property)) continue;
                 var fieldName = DbAttributes.GetDbFieldName(property);
                 result.Add(property, fieldName);
             }

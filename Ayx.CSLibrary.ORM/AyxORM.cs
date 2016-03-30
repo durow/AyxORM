@@ -57,26 +57,7 @@ namespace Ayx.CSLibrary.ORM
         public int ExecuteNonQuery(string sql, object param = null, IDbTransaction transaction = null)
         {
             var cmd = GetCommand(sql, param, transaction);
-
-            try
-            {
-                if (transaction == null)
-                {
-                    cmd.Connection.Open();
-                    var count = cmd.ExecuteNonQuery();
-                    cmd.Connection.Close();
-                    return count;
-                }
-                else
-                {
-                    return cmd.ExecuteNonQuery();
-                }
-            }
-            catch
-            {
-                cmd.Connection.Close();
-                throw;
-            }
+            return ExecuteNonQuery(cmd);
         }
 
         //public int ExecuteNonQuery(string sql, DbParams param = null, IDbTransaction transaction = null)
@@ -99,29 +80,6 @@ namespace Ayx.CSLibrary.ORM
                 else
                 {
                     return cmd.ExecuteNonQuery();
-                }
-            }
-            catch
-            {
-                cmd.Connection.Close();
-                throw;
-            }
-        }
-
-        public object ExecuteScalar(IDbCommand cmd)
-        {
-            try
-            {
-                if (cmd.Transaction == null)
-                {
-                    cmd.Connection.Open();
-                    var result = cmd.ExecuteScalar();
-                    cmd.Connection.Close();
-                    return result;
-                }
-                else
-                {
-                    return cmd.ExecuteScalar();
                 }
             }
             catch
@@ -158,6 +116,7 @@ namespace Ayx.CSLibrary.ORM
 
         //public DataTable ExecuteDataTable(string sql, DbParams param = null, IDbTransaction transaction = null)
         //{
+
         //    return ExecuteDataSet(sql, param, transaction).Tables[0];
         //}
 
@@ -206,7 +165,7 @@ namespace Ayx.CSLibrary.ORM
             }
         }
 
-        public int Delete<T>(T item, IDbTransaction transaction)
+        public int Delete<T>(T item, IDbTransaction transaction = null)
         {
             var sql = SQLGenerator.GetDeleteSQL<T>();
             var cmd = GetCommand(sql, null, transaction);
@@ -215,18 +174,27 @@ namespace Ayx.CSLibrary.ORM
             return ExecuteNonQuery(cmd);
         }
 
+        public int Delete<T>(string where, object param = null, IDbTransaction transaction = null)
+        {
+            var sql = SQLGenerator.GetDeleteSQL<T>(where);
+            var cmd = GetCommand(sql, param, transaction);
+            return ExecuteNonQuery(cmd);
+        }
+
         public int Update<T>(T item, IDbTransaction transaction = null)
         {
-            var cmd = GetCommand("", null, transaction);
-            var set = "";
-            var type = typeof(T);
+            var mapping = Mapper<T>.GetUpdateMapping();
+            var sql = SQLGenerator.GetUpdateSQL<T>(mapping);
+            var cmd = GetCommand(sql, item, transaction);
+            return ExecuteNonQuery(cmd);
+        }
 
-            foreach (var property in type.GetProperties())
-            {
-                set += SQLGenerator.GetSetSQL(property) + ",";
-                AddDataParameter(cmd, item, property);
-            }
-            cmd.CommandText = SQLGenerator.GetUpdateSQL<T>(set.Substring(0, set.Length - 1));
+        public int Update<T>(IList<string> fields, T item, IDbTransaction transaction = null)
+        {
+            if (fields == null || !fields.Any())
+                return Update<T>(item, transaction);
+            var sql = SQLGenerator.GetUpdateSQL<T>(fields);
+            var cmd = GetCommand(sql, item,transaction);
             return ExecuteNonQuery(cmd);
         }
 
@@ -241,11 +209,26 @@ namespace Ayx.CSLibrary.ORM
 
         public int InsertAndGetID<T>(T item, IDbTransaction transaction = null)
         {
-            var mapping = Mapper<T>.GetInsertMapping();
-            var sql = SQLGenerator.GetInsertAndGetIDSQL<T>(mapping);
-            var cmd = GetCommand(sql, null, transaction);
-            AddDataParameters(cmd, item, mapping);
-            return (int)ExecuteScalar(cmd);
+            var newTrans = false;
+            if(transaction == null)
+            {
+                transaction = GetTransaction();
+                newTrans = true;
+            }
+            try
+            {
+                Insert<T>(item, transaction);
+                var cmd = GetCommand("SELECT @@IDENTITY", null, transaction);
+                var result = cmd.ExecuteScalar();
+                if(newTrans)
+                    transaction.Commit();
+                return (int)result;
+            }
+            catch
+            {
+                transaction.Rollback();
+                throw;
+            }
         }
 
         public int InsertList<T>(IList<T> items, IDbTransaction transaction = null)
@@ -301,10 +284,9 @@ namespace Ayx.CSLibrary.ORM
 
         #endregion
 
-        #region PrivateMethods
+        #region Public methods
 
-        //Add parameters to command
-        private void AddDataParameters(IDbCommand cmd, object param)
+        public void AddDataParameters(IDbCommand cmd, object param)
         {
             if (param == null) return;
             var t = param.GetType();
@@ -315,7 +297,7 @@ namespace Ayx.CSLibrary.ORM
             }
         }
 
-        private void AddDataParameters<T>(IDbCommand cmd, T item, Dictionary<PropertyInfo,string> mapping)
+        public void AddDataParameters<T>(IDbCommand cmd, T item, Dictionary<PropertyInfo,string> mapping)
         {
             foreach (var map in mapping)
             {
@@ -323,7 +305,7 @@ namespace Ayx.CSLibrary.ORM
             }
         }
 
-        //private void AddDataParameters(IDbCommand cmd,DbParams paramDict)
+        //private void AddDataParameters(IDbCommand cmd, DbParams paramDict)
         //{
         //    if (paramDict == null) return;
         //    foreach (var param in paramDict)
@@ -332,16 +314,16 @@ namespace Ayx.CSLibrary.ORM
         //    }
         //}
 
-        private void AddDataParameter(IDbCommand cmd, string key, object value)
+        public void AddDataParameter(IDbCommand cmd, string key, object value)
         {
             cmd.Parameters.Add(ADOFactory.CreateDataParameter(key, value));
         }
 
-        private void AddDataParameter<T>(IDbCommand cmd, T item, PropertyInfo property)
+        public void AddDataParameter<T>(IDbCommand cmd, T item, PropertyInfo property)
         {
             AddDataParameter(cmd, "@" + property.Name, property.GetValue(item, null));
         }
-        private IDbConnection GetConnection(IDbTransaction transaction)
+        public IDbConnection GetConnection(IDbTransaction transaction)
         {
             if (transaction != null)
                 return transaction.Connection;
@@ -349,14 +331,14 @@ namespace Ayx.CSLibrary.ORM
                 return GetConnection();
         }
 
-        private IDbConnection GetConnection()
+        public IDbConnection GetConnection()
         {
             var result = ADOFactory.CreateConnection();
             result.ConnectionString = ConnectionString;
             return result;
         }
 
-        private IDbCommand GetCommand(string sql,object param, IDbTransaction transaction)
+        public IDbCommand GetCommand(string sql,object param, IDbTransaction transaction)
         {
             var con = GetConnection(transaction);
             var cmd = ADOFactory.CreateCommand();
@@ -378,7 +360,7 @@ namespace Ayx.CSLibrary.ORM
         //    return cmd;
         //}
 
-        private IDataAdapter GetAdapter(IDbCommand cmd)
+        public IDataAdapter GetAdapter(IDbCommand cmd)
         {
             var result = ADOFactory.CreateDataAdapter();
             result.SelectCommand = cmd;

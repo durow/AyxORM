@@ -46,6 +46,7 @@
     <Compile Include="DbAttributes.cs" />
     <Compile Include="DbParams.cs" />
     <Compile Include="Enums.cs" />
+    <Compile Include="FieldMapping.cs" />
     <Compile Include="Mapper.cs" />
     <Compile Include="OleDbFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections;
+﻿/*
+ * Description:Instead of Dictionary<string,object> for short
+*/
+
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Ayx.CSLibrary.ORM
 {
