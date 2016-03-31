@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+/*
+ * Description:make it easy to get the attributes of class
+*/
+
 using System.Reflection;
-using System.Text;
 
 namespace Ayx.CSLibrary.Service
 {

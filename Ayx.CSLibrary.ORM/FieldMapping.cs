@@ -52,5 +52,17 @@ namespace Ayx.CSLibrary.ORM
             }
             return result;
         }
+
+        public static FieldMapping GetFromNameMapping<T>(NameMapping mapping)
+        {
+            var result = new FieldMapping();
+            var type = typeof(T);
+            foreach (var property in type.GetProperties())
+            {
+                if (mapping.ContainsKey(property.Name))
+                    result.Add(property, mapping[property.Name]);
+            }
+            return result;
+        }
     }
 }

@@ -44,7 +44,7 @@
     <Compile Include="AyxORMException.cs" />
     <Compile Include="Common\IADOFactory.cs" />
     <Compile Include="DbAttributes.cs" />
-    <Compile Include="DbParams.cs" />
+    <Compile Include="NameMapping.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="FieldMapping.cs" />
     <Compile Include="Mapper.cs" />

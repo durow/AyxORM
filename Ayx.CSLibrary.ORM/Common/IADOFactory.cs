@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿/*
+ * Description:interface of the factory that can create ADO.NET object
+*/
+
 using System.Data;
-using System.Linq;
-using System.Text;
 
 namespace Ayx.CSLibrary.ORM.Common
 {

@@ -52,7 +52,7 @@ namespace Ayx.CSLibrary.ORM
             }
         }
 
-        public void CheckFieldMapping(DataColumnCollection columns)
+        private void CheckFieldMapping(DataColumnCollection columns)
         {
             if (FieldMapping != null) return;
             FieldMapping = FieldMapping.GetSelectMapping<T>(columns);
