@@ -183,7 +183,7 @@ namespace Ayx.CSLibrary.ORM
 
         public int Update<T>(T item, IDbTransaction transaction = null)
         {
-            var mapping = Mapper<T>.GetUpdateMapping();
+            var mapping = FieldMapping.GetUpdateMapping<T>();
             var sql = SQLGenerator.GetUpdateSQL<T>(mapping);
             var cmd = GetCommand(sql, item, transaction);
             return ExecuteNonQuery(cmd);
@@ -200,7 +200,7 @@ namespace Ayx.CSLibrary.ORM
 
         public int Insert<T>(T item, IDbTransaction transaction = null)
         {
-            var mapping = Mapper<T>.GetInsertMapping();
+            var mapping = FieldMapping.GetInsertMapping<T>();
             var sql = SQLGenerator.GetInsertSQL<T>(mapping);
             var cmd = GetCommand(sql, null, transaction);
             AddDataParameters(cmd, item, mapping);
@@ -234,7 +234,7 @@ namespace Ayx.CSLibrary.ORM
         public int InsertList<T>(IList<T> items, IDbTransaction transaction = null)
         {
             bool isNewTransaction = false;
-            var mapping = Mapper<T>.GetInsertMapping();
+            var mapping = FieldMapping.GetInsertMapping<T>();
             var sql = SQLGenerator.GetInsertSQL<T>(mapping);
             if (transaction == null)
             {

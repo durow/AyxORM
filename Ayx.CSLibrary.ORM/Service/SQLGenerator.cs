@@ -12,7 +12,7 @@ namespace Ayx.CSLibrary.ORM.Service
 {
     public class SQLGenerator
     {
-        public static string GetInsertSQL<T>(Dictionary<PropertyInfo, string> mapping)
+        public static string GetInsertSQL<T>(FieldMapping mapping)
         {
             var tableName = DbAttributes.GetDbTableName<T>();
             var result = "INSERT INTO " + tableName +

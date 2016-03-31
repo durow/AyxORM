@@ -11,7 +11,7 @@ namespace Ayx.CSLibrary.ORM.Tests
     [TestClass()]
     public class AyxORMTests
     {
-        AyxORM orm = AyxORM.UseAccess2003(@"D:\Temp\TestData\test.mdb");
+        AyxORM orm = AyxORM.UseAccess2003(@"test.mdb");
         [TestMethod()]
         public void ExecuteNonQueryTest()
         {

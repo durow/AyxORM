@@ -59,12 +59,18 @@
     <Compile Include="DbAttributesTests.cs" />
     <Compile Include="Service\SQLGeneratorTests.cs" />
     <Compile Include="TestData\TestData.cs" />
+    <Compile Include="TestData\TestTable.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Ayx.CSLibrary.ORM\Ayx.CSLibrary.ORM.csproj">
       <Project>{0F196AE5-5165-4117-A06D-D5AB7E397BA8}</Project>
       <Name>Ayx.CSLibrary.ORM</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test.mdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

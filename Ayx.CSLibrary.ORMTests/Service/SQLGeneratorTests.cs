@@ -16,7 +16,7 @@ namespace Ayx.CSLibrary.ORM.Service.Tests
         {
             var expected = "INSERT INTO TestTable(ShortTextField,IntField,DateTimeField,BoolField,LongTextField,AddField1,AddField2,AddField3,AddField4,AddField5) VALUES(@ShortTextProperty,@IntProperty,@DateTimeProperty,@BoolField,@LongTextProperty,@AddField1,@AddField2,@AddField3,@AddField4,@AddField5)";
             var data = TestData.GetTestData(1).First();
-            var mapping = Mapper<TestData>.GetInsertMapping();
+            var mapping = FieldMapping.GetInsertMapping<TestData>();
             var actual = SQLGenerator.GetInsertSQL<TestData>(mapping);
             Assert.AreEqual(expected, actual);
         }
@@ -65,7 +65,7 @@ namespace Ayx.CSLibrary.ORM.Service.Tests
         public void GetUpdateSQLTest()
         {
             var expected = "UPDATE TestTable SET ShortTextField=@ShortTextProperty,IntField=@IntProperty,DateTimeField=@DateTimeProperty,BoolField=@BoolField,LongTextField=@LongTextProperty,AddField1=@AddField1,AddField2=@AddField2,AddField3=@AddField3,AddField4=@AddField4,AddField5=@AddField5 WHERE ID=@ID";
-            var mapping = Mapper<TestData>.GetUpdateMapping();
+            var mapping = FieldMapping.GetUpdateMapping<TestData>();
             var actual = SQLGenerator.GetUpdateSQL<TestData>(mapping);
             Assert.AreEqual(expected, actual);
         }

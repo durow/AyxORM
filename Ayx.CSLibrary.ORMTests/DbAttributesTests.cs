@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Ayx.CSLibrary.Service;
+using Ayx.CSLibrary.ORMTests.TestData;
 
 namespace Ayx.CSLibrary.ORM.Tests
 {
@@ -80,6 +81,23 @@ namespace Ayx.CSLibrary.ORM.Tests
             var property = test.GetType().GetProperty("ID");
             var attCount = AttributeHelper.GetAttributes<DbFieldAttribute>(property).Count();
             Assert.AreEqual(1, attCount, attCount);
+        }
+
+        [TestMethod()]
+        public void GetDbFieldNameTest()
+        {
+            var property = typeof(TestData).GetProperties().FirstOrDefault();
+            var expected = "ID";
+            var actual = DbAttributes.GetDbFieldName(property);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void IsAutoIncrementTest()
+        {
+            var property = typeof(TestData).GetProperties().FirstOrDefault();
+            var test = DbAttributes.IsAutoIncrement(property);
+            Assert.IsTrue(test);
         }
     }
 }

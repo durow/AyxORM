@@ -9,7 +9,7 @@ namespace Ayx.CSLibrary.ORM
 {
     public class Mapper<T>
     {
-        public Dictionary<PropertyInfo, string> FieldMapping { get; private set; }
+        public FieldMapping FieldMapping { get; private set; }
 
         public T From(DataRow row)
         {
@@ -41,7 +41,7 @@ namespace Ayx.CSLibrary.ORM
         {
             CheckFieldMapping(null);
 
-            while(reader.Read())
+            while (reader.Read())
             {
                 var result = Activator.CreateInstance<T>();
                 foreach (var property in FieldMapping)
@@ -55,70 +55,20 @@ namespace Ayx.CSLibrary.ORM
         public void CheckFieldMapping(DataColumnCollection columns)
         {
             if (FieldMapping != null) return;
-            FieldMapping = GetSelectMapping(columns);
+            FieldMapping = FieldMapping.GetSelectMapping<T>(columns);
         }
 
         public static void SetPropertyValue(object item, PropertyInfo property, object value)
         {
-            var newValue = Convert.ChangeType(value, property.PropertyType);
-            property.SetValue(item, newValue, null);
-        }
-
-        public string GetFieldName(PropertyInfo property, DataColumnCollection columns)
-        {
-            if (!DbAttributes.IsDbField(property)) return "";
-            var dbFieldName = DbAttributes.GetDbFieldName(property);
-            if (!columns.Contains(dbFieldName)) return "";
-            return dbFieldName;
-        }
-
-        public IEnumerable<T> CreateInstanceList(int num)
-        {
-            if (num <= 0) yield break;
-            yield return Activator.CreateInstance<T>();
-        }
-
-        public static Dictionary<PropertyInfo, string> GetSelectMapping(DataColumnCollection columns)
-        {
-            var result = new Dictionary<PropertyInfo, string>();
-            var type = typeof(T);
-            foreach (var property in type.GetProperties())
+            try
             {
-                if (!DbAttributes.IsDbField(property)) continue;
-                var fieldName = DbAttributes.GetDbFieldName(property);
-                if(columns != null)
-                    if (!columns.Contains(fieldName)) continue;
-                result.Add(property, fieldName);
+                var newValue = Convert.ChangeType(value, property.PropertyType);
+                property.SetValue(item, newValue, null);
             }
-            return result;
-        }
-
-        public static Dictionary<PropertyInfo, string> GetInsertMapping()
-        {
-            var result = new Dictionary<PropertyInfo, string>();
-            var type = typeof(T);
-            foreach (var property in type.GetProperties())
+            catch
             {
-                if (!DbAttributes.IsDbField(property)) continue;
-                if (DbAttributes.IsAutoIncrement(property)) continue;
-                var fieldName = DbAttributes.GetDbFieldName(property);
-                result.Add(property, fieldName);
+                throw;
             }
-            return result;
-        }
-
-        public static Dictionary<PropertyInfo, string> GetUpdateMapping()
-        {
-            var result = new Dictionary<PropertyInfo, string>();
-            var type = typeof(T);
-            foreach (var property in type.GetProperties())
-            {
-                if (!DbAttributes.IsDbField(property)) continue;
-                if (DbAttributes.IsAutoIncrement(property)) continue;
-                var fieldName = DbAttributes.GetDbFieldName(property);
-                result.Add(property, fieldName);
-            }
-            return result;
         }
     }
 }
