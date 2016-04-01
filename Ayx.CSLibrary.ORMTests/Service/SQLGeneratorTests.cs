@@ -22,6 +22,22 @@ namespace Ayx.CSLibrary.ORM.Service.Tests
         }
 
         [TestMethod()]
+        public void GetInsertSQLTest1()
+        {
+            var nameMapping = new NameMapping
+            {
+                {"ID","ID" },
+                {"ShortTextProperty","ShortTextField" },
+                {"IntProperty","IntField" },
+                {"LongTextProperty","LongTextField" },
+            };
+            var expected = "INSERT INTO TestTable(ShortTextField,IntField,LongTextField) "+
+                "VALUES(@ShortTextProperty,@IntProperty,@LongTextProperty)";
+            var actual = SQLGenerator.GetInsertSQL("TestTable", nameMapping, "ID");
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
         public void GetIdentitySQLTest()
         {
             var expected = "SELECT @@IDENTITY";
@@ -103,5 +119,7 @@ namespace Ayx.CSLibrary.ORM.Service.Tests
             var actual = SQLGenerator.GetClearSQL<TestData>();
             Assert.AreEqual(expected, actual);
         }
+
+        
     }
 }

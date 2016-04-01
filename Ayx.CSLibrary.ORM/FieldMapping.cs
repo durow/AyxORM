@@ -10,7 +10,7 @@ namespace Ayx.CSLibrary.ORM
 {
     public class FieldMapping:Dictionary<PropertyInfo,string>
     {
-        public static FieldMapping GetSelectMapping<T>(DataColumnCollection columns)
+        public static FieldMapping GetSelectMapping<T>(DataColumnCollection columns = null)
         {
             var result = new FieldMapping();
             var type = typeof(T);

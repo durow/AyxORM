@@ -14,9 +14,6 @@ namespace Ayx.CSLibrary.ORM.Service
     {
         public static string GetInsertSQL<T>(FieldMapping mapping)
         {
-            var tableName = DbAttributes.GetDbTableName<T>();
-            var result = "INSERT INTO " + tableName +
-                              "({fields}) VALUES({values})";
             var fieldSB = new StringBuilder();
             var valueSB = new StringBuilder();
             foreach (var map in mapping)
@@ -24,9 +21,20 @@ namespace Ayx.CSLibrary.ORM.Service
                 fieldSB.Append(map.Value).Append(",");
                 valueSB.Append("@").Append(map.Key.Name).Append(",");
             }
-            return result
-                .Replace("{fields}", fieldSB.ToString(0, fieldSB.Length - 1))
-                .Replace("{values}", valueSB.ToString(0, valueSB.Length - 1));
+            return GetInsertSQL(DbAttributes.GetDbTableName<T>(), fieldSB, valueSB);
+        }
+
+        public static string GetInsertSQL(string tableName, NameMapping mapping, params string[] passKey)
+        {
+            var fieldSB = new StringBuilder();
+            var valueSB = new StringBuilder();
+            foreach (var map in mapping)
+            {
+                if (passKey.Contains(map.Key)) continue;
+                fieldSB.Append(map.Value).Append(",");
+                valueSB.Append("@").Append(map.Key).Append(",");
+            }
+            return GetInsertSQL(tableName, fieldSB, valueSB);
         }
 
         public static string GetIdentitySQL()
@@ -34,7 +42,7 @@ namespace Ayx.CSLibrary.ORM.Service
             return "SELECT @@IDENTITY";
         }
 
-        public static string GetSelectSQL<T>(string where)
+        public static string GetSelectSQL<T>(string fields = null , string where = null)
         {
             if (!string.IsNullOrEmpty(where))
                 where = " WHERE " + where;
@@ -117,6 +125,15 @@ namespace Ayx.CSLibrary.ORM.Service
         {
             var tableName = DbAttributes.GetDbTableName<T>();
             return "DELETE FROM " + tableName;
+        }
+
+        private static string GetInsertSQL(string tableName,StringBuilder fieldSB,StringBuilder valueSB)
+        {
+            var result = "INSERT INTO " + tableName +
+                              "({fields}) VALUES({values})";
+            return result
+                .Replace("{fields}", fieldSB.ToString(0, fieldSB.Length - 1))
+                .Replace("{values}", valueSB.ToString(0, valueSB.Length - 1));
         }
     }
 }

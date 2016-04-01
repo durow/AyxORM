@@ -11,6 +11,18 @@ namespace Ayx.CSLibrary.ORM
     {
         public FieldMapping FieldMapping { get; private set; }
 
+        public Mapper() { }
+
+        public Mapper(FieldMapping mapping)
+        {
+            FieldMapping = mapping;
+        }
+
+        public Mapper(NameMapping mapping)
+        {
+            FieldMapping = FieldMapping.GetFromNameMapping<T>(mapping);
+        }
+
         public T From(DataRow row)
         {
             CheckFieldMapping(row.Table.Columns);
