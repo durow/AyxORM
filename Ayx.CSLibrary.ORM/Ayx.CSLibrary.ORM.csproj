@@ -52,6 +52,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\AttributeHelper.cs" />
     <Compile Include="Service\SQLGenerator.cs" />
+    <Compile Include="SQL.cs" />
     <Compile Include="SqlServerFactory.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

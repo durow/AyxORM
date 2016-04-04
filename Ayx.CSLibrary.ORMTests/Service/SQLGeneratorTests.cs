@@ -49,7 +49,7 @@ namespace Ayx.CSLibrary.ORM.Service.Tests
         public void GetSelectSQLTest()
         {
             var expected = "SELECT * FROM TestTable WHERE ID>@ID";
-            var actual = SQLGenerator.GetSelectSQL<TestData>("ID>@ID");
+            var actual = SQLGenerator.GetSelectSQL<TestData>(null, "ID>@ID");
             Assert.AreEqual(expected, actual);
         }
 
