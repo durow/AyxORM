@@ -42,11 +42,12 @@ namespace Ayx.CSLibrary.ORM.Service
             return "SELECT @@IDENTITY";
         }
 
-        public static string GetSelectSQL<T>(string fields = null , string where = null)
+        public static string GetSelectSQL<T>(string fields , string where)
         {
+            if (string.IsNullOrEmpty(fields)) fields = "*";
             if (!string.IsNullOrEmpty(where))
                 where = " WHERE " + where;
-            return @"SELECT * FROM " + DbAttributes.GetDbTableName<T>() + where;
+            return @"SELECT " + fields + " FROM " + DbAttributes.GetDbTableName<T>() + where;
         }
 
         public static string GetDeleteSQL<T>()

@@ -141,9 +141,9 @@ namespace Ayx.CSLibrary.ORM
             return new Mapper<T>().From(dt);
         }
 
-        public IEnumerable<T> Select<T>(string where = "", object param= null, IDbTransaction transaction = null)
+        public IEnumerable<T> Select<T>(string fields = "*", string where = "", object param= null, IDbTransaction transaction = null)
         {
-            var sql = SQLGenerator.GetSelectSQL<T>(where);
+            var sql = SQLGenerator.GetSelectSQL<T>(fields, where);
             var cmd = GetCommand(sql, param, transaction);
             try
             {

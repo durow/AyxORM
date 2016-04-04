@@ -46,7 +46,7 @@ namespace Ayx.CSLibrary.ORM.Tests
         [TestMethod()]
         public void SelectTest()
         {
-            var test = orm.Select<TestData>("ID>@ID", new { ID = 10 });
+            var test = orm.Select<TestData>("*","ID>@ID", new { ID = 10 });
             Assert.IsTrue(test.Count() >= 0);
         }
 
